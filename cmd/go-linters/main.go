@@ -28,7 +28,7 @@ func run() error {
  if source == "" && (version == "" || version == "(devel)") { return fmt.Errorf("use a released version or set GO_LINTERS_SOURCE to the absolute source directory") }
  dir, err := os.MkdirTemp("", "go-linters-*")
  if err != nil { return err }
- defer os.RemoveAll(dir)
+ defer func() { _ = os.RemoveAll(dir) }()
  bin := filepath.Join(dir, "bin")
  if err := os.Mkdir(bin, 0755); err != nil { return err }
  install := exec.Command("go", "install", "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@"+golangciVersion)
