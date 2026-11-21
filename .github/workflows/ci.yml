@@ -29,9 +29,10 @@ jobs:
           fi
           cat lint.log
           grep -q 'TODO comment must name an owner' lint.log
+          grep -q 'interface Worker has 1 concrete implementations' lint.log
           go get "github.com/rdpetrusek/go-linters@${LINTER_REVISION}"
           mkdir -p cmd/check
-          printf 'package main\nimport ("github.com/rdpetrusek/go-linters/analyzers/todoowner"; "golang.org/x/tools/go/analysis/multichecker")\nfunc main() { multichecker.Main(todoowner.Analyzer) }\n' > cmd/check/main.go
+          printf 'package main\nimport ("github.com/rdpetrusek/go-linters/analyzers/todoowner"; "github.com/rdpetrusek/go-linters/analyzers/multiimpl"; "golang.org/x/tools/go/analysis/multichecker")\nfunc main() { multichecker.Main(todoowner.Analyzer, multiimpl.Analyzer) }\n' > cmd/check/main.go
           go mod tidy
           if go run ./cmd/check . > analyzer.log 2>&1; then
             cat analyzer.log
@@ -39,3 +40,4 @@ jobs:
           fi
           cat analyzer.log
           grep -q 'TODO comment must name an owner' analyzer.log
+          grep -q 'interface Worker has 1 concrete implementations' analyzer.log

@@ -3,6 +3,13 @@
 Reusable Go `go/analysis` analyzers and a module plugin for
 [golangci-lint](https://golangci-lint.run/). The current example analyzer,
 `todoowner`, reports `// TODO:` and `// TODO():` comments without an owner.
+`multiimpl` reports named interfaces with fewer than two concrete implementations
+in non-test packages of the same Go module. A named type and its pointer count as
+one implementation. It scans the module using the default Go build environment;
+test-only types, external modules, aliases, generic types and generic interfaces
+are excluded. Constraint interfaces with type sets are skipped. Implementations
+in other modules cannot be discovered. If any module package fails to load,
+analysis fails rather than reporting incomplete counts.
 
 ## Use with golangci-lint
 
