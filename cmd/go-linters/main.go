@@ -38,7 +38,7 @@ func install(destination string) error {
  bin := filepath.Join(dir, "bin")
  if err := os.Mkdir(bin, 0755); err != nil { return err }
  executable := "golangci-lint"
- customName := "go-linters"
+ customName := "golangci-lint"
  if runtime.GOOS == "windows" { executable += ".exe"; customName += ".exe" }
  install := exec.Command("go", "install", "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@"+golangciVersion)
  install.Env = append(os.Environ(), "GOBIN="+bin)
@@ -49,7 +49,7 @@ func install(destination string) error {
   if !filepath.IsAbs(source) || strings.ContainsAny(source, "\r\n\"") { return fmt.Errorf("GO_LINTERS_SOURCE must be an absolute path without quotes or newlines") }
   plugin = "    path: \"" + source + "\""
  }
- build := "version: " + golangciVersion + "\nname: go-linters\ndestination: " + dir + "\nplugins:\n  - module: " + module + "\n    import: " + module + "/plugin\n" + plugin + "\n"
+ build := "version: " + golangciVersion + "\nname: golangci-lint\ndestination: " + dir + "\nplugins:\n  - module: " + module + "\n    import: " + module + "/plugin\n" + plugin + "\n"
  if err := os.WriteFile(filepath.Join(dir, ".custom-gcl.yml"), []byte(build), 0600); err != nil { return err }
  custom := exec.Command(filepath.Join(bin, executable), "custom", "-v")
  custom.Dir = dir

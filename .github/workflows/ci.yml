@@ -21,7 +21,8 @@ jobs:
           cd "$RUNNER_TEMP/consumer"
           printf 'module example.com/consumer\n\ngo 1.24\n' > go.mod
           printf 'package consumer\n\n// TODO: add owner\nfunc Example() {}\n' > main.go
-          if "$RUNNER_TEMP/shared-linter/go-linters" run --config "$RUNNER_TEMP/shared-linter/go-linters.yml" ./... > lint.log 2>&1; then
+          cp "$RUNNER_TEMP/shared-linter/go-linters.yml" .golangci.yml
+          if "$RUNNER_TEMP/shared-linter/golangci-lint" run ./... > lint.log 2>&1; then
             cat lint.log
             exit 1
           fi
