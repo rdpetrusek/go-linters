@@ -14,7 +14,7 @@ import (
 
 func TestRun(t *testing.T) {
 	dir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dir, "paired.go"), []byte("package sample"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "paired.go"), []byte("package sample"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for _, tc := range []struct {

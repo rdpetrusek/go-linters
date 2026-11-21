@@ -12,10 +12,16 @@ var analyzers = []*analysis.Analyzer{todoowner.Analyzer, multiimpl.Analyzer}
 
 func init() { register.Plugin("shared", New) }
 
+// Plugin provides the shared analyzers to golangci-lint.
 type Plugin struct{}
 
+// New constructs the shared analyzer plugin.
 func New(_ any) (register.LinterPlugin, error) { return &Plugin{}, nil }
-func (*Plugin) GetLoadMode() string            { return register.LoadModeTypesInfo }
+
+// GetLoadMode requests type information for the analyzers.
+func (*Plugin) GetLoadMode() string { return register.LoadModeTypesInfo }
+
+// BuildAnalyzers returns the registered analyzers.
 func (*Plugin) BuildAnalyzers() ([]*analysis.Analyzer, error) {
 	return analyzers, nil
 }

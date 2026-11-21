@@ -45,7 +45,7 @@ func loadModule(root string) ([]*packages.Package, error) {
 		index.packages = filtered
 		for _, pkg := range index.packages {
 			if len(pkg.Errors) != 0 {
-				index.err = fmt.Errorf("cannot load module package %s: %s", pkg.PkgPath, pkg.Errors[0])
+				index.err = fmt.Errorf("cannot load module package %s: %w", pkg.PkgPath, pkg.Errors[0])
 				return
 			}
 		}

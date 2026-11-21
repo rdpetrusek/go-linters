@@ -76,7 +76,7 @@ func load(root string) (map[position]uses, error) {
 				continue
 			}
 			if len(pkg.Errors) > 0 {
-				index.err = fmt.Errorf("cannot load %s: %s", pkg.ID, pkg.Errors[0])
+				index.err = fmt.Errorf("cannot load %s: %w", pkg.ID, pkg.Errors[0])
 				return
 			}
 			if pkg.TypesInfo == nil {

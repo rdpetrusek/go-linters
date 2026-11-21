@@ -16,7 +16,7 @@ import (
 func TestRun(t *testing.T) {
 	dir := t.TempDir()
 	source := "package sample\nfunc Foo() {}\nfunc bar() {}\ntype Thing struct{}\nfunc (Thing) Method() {}\n"
-	if err := os.WriteFile(filepath.Join(dir, "sample.go"), []byte(source), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "sample.go"), []byte(source), 0600); err != nil {
 		t.Fatal(err)
 	}
 	cases := []struct {
