@@ -1,0 +1,5 @@
+version: v2.7.2
+plugins:
+  - module: github.com/rdpetrusek/go-linters
+    import: github.com/rdpetrusek/go-linters/plugin
+    path: .

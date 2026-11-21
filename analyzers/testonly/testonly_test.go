@@ -12,7 +12,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-func TestModuleReferences(t *testing.T) {
+func TestRun(t *testing.T) {
 	root := t.TempDir()
 	files := map[string]string{
 		"go.mod": "module example.com/fixture\n\ngo 1.23\n",
@@ -59,8 +59,17 @@ func externalTest() { library.OnlyTest() }
 		t.Fatal(err)
 	}
 	sort.Strings(findings)
-	want := []string{"OnlyTest is used only in tests", "TestConst is used only in tests", "TestField is used only in tests", "TestMethod is used only in tests", "TestVar is used only in tests"}
-	if strings.Join(findings, "|") != strings.Join(want, "|") {
-		t.Fatalf("got %q, want %q", findings, want)
+	want := []struct{ message string }{
+		{"OnlyTest is used only in tests"}, {"TestConst is used only in tests"},
+		{"TestField is used only in tests"}, {"TestMethod is used only in tests"},
+		{"TestVar is used only in tests"},
+	}
+	if len(findings) != len(want) {
+		t.Fatalf("unexpected findings: %s", strings.Join(findings, ", "))
+	}
+	for i, tc := range want {
+		if findings[i] != tc.message {
+			t.Errorf("got %q, want %q", findings[i], tc.message)
+		}
 	}
 }
