@@ -1,5 +1,7 @@
-.PHONY: lint test
+.PHONY: install lint test
+install:
+	GO_LINTERS_SOURCE="$(CURDIR)" go run ./cmd/go-linters -dir .bin
 lint:
-	GO_LINTERS_SOURCE="$(CURDIR)" go run ./cmd/go-linters ./...
+	.bin/go-linters run --config .bin/go-linters.yml ./...
 test:
 	go test ./...
