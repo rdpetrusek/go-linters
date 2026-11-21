@@ -19,7 +19,7 @@ jobs:
           mkdir "$RUNNER_TEMP/consumer"
           cd "$RUNNER_TEMP/consumer"
           printf 'module example.com/consumer\n\ngo 1.24\n' > go.mod
-          printf 'package consumer\n\n// TODO: add owner\nfunc Example() {}\n' > main.go
+          printf 'package consumer\n\n// TODO: add owner\nfunc Example() {}\ntype Worker interface { Work() }\ntype One struct{}\nfunc (One) Work() {}\n' > main.go
           printf 'version: v2.7.2\nplugins:\n  - module: github.com/rdpetrusek/go-linters\n    import: github.com/rdpetrusek/go-linters/plugin\n    version: %s\n' "$revision" > .custom-gcl.yml
           printf 'version: "2"\nlinters:\n  default: none\n  enable:\n    - govet\n    - shared\n  settings:\n    custom:\n      shared:\n        type: module\n' > .golangci.yml
           golangci-lint custom
@@ -29,9 +29,10 @@ jobs:
           fi
           cat lint.log
           grep -q 'TODO comment must name an owner' lint.log
+          grep -q 'interface Worker has 1 concrete implementations' lint.log
           go get "github.com/rdpetrusek/go-linters@${LINTER_REVISION}"
           mkdir -p cmd/check
-          printf 'package main\nimport ("github.com/rdpetrusek/go-linters/analyzers/todoowner"; "golang.org/x/tools/go/analysis/multichecker")\nfunc main() { multichecker.Main(todoowner.Analyzer) }\n' > cmd/check/main.go
+          printf 'package main\nimport ("github.com/rdpetrusek/go-linters/analyzers/todoowner"; "github.com/rdpetrusek/go-linters/analyzers/multiimpl"; "golang.org/x/tools/go/analysis/multichecker")\nfunc main() { multichecker.Main(todoowner.Analyzer, multiimpl.Analyzer) }\n' > cmd/check/main.go
           go mod tidy
           if go run ./cmd/check . > analyzer.log 2>&1; then
             cat analyzer.log
@@ -39,3 +40,4 @@ jobs:
           fi
           cat analyzer.log
           grep -q 'TODO comment must name an owner' analyzer.log
+          grep -q 'interface Worker has 1 concrete implementations' analyzer.log
