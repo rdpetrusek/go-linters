@@ -8,6 +8,10 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
+      - name: Format Go source
+        run: |
+          gofmt -w .
+          git diff --exit-code -- '*.go'
       - run: go test ./...
       - name: Verify module plugin and direct analyzer import
         env:
