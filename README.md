@@ -3,6 +3,13 @@
 Reusable Go `go/analysis` analyzers and a module plugin for
 [golangci-lint](https://golangci-lint.run/). The current example analyzer,
 `todoowner`, reports `// TODO:` and `// TODO():` comments without an owner.
+`multiimpl` reports named interfaces with fewer than two concrete implementations
+in non-test packages of the same Go module. A named type and its pointer count as
+one implementation. It scans the module using the default Go build environment;
+test-only types, external modules, aliases, generic types and generic interfaces
+are excluded. Constraint interfaces with type sets are skipped. Implementations
+in other modules cannot be discovered. If any module package fails to load,
+analysis fails rather than reporting incomplete counts.
 
 ## Use with golangci-lint
 
@@ -61,26 +68,6 @@ use `--config` to select a file explicitly. Build again when the pinned
 plugin version changes. Use the same pinned configuration and commands locally
 and in CI. The `shared` plugin currently enables its registered analyzers as
 a group; individual analyzers cannot be selected separately through it.
-
-## Test convention analyzers
-
-The `shared` plugin includes four distinct analyzers:
-
-- `testpackage` requires each `_test.go` file to use an external package
-  ending in `_test`.
-- `testfilename` requires `foo_test.go` to have a neighboring `foo.go`.
-- `testfunctionname` requires `TestFoo` to match `Foo` or `foo` in that
-  neighboring source file, including methods. It checks names, not whether
-  the test actually exercises the function.
-- `tabletest` requires each test function to range over a slice, array, or
-  map of structs (or pointers to structs). This checks the table-driven
-  structure; it does not establish whether assertions are meaningful.
-
-These rules apply to Go test functions, not benchmarks, fuzz targets, examples,
-helpers, or `TestMain`. The filename and package checks apply to every test
-file. Tests for unexported functions in an external package cannot call those
-functions directly. As with the other analyzers, the plugin enables them as a
-group; each analyzer can also be imported separately by a Go analysis driver.
 
 ## Use with other Go analysis tools
 
