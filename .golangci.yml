@@ -1,0 +1,10 @@
+version: "2"
+linters:
+  enable:
+    - shared
+  settings:
+    custom:
+      shared:
+        type: module
+issues:
+  uniq-by-line: false

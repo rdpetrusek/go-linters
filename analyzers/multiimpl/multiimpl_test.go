@@ -10,7 +10,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-func TestImplementationsAcrossPackages(t *testing.T) {
+func TestImplementations(t *testing.T) {
 	root := t.TempDir()
 	files := map[string]string{
 		"go.mod": "module example.com/check\n\ngo 1.23\n",
@@ -61,27 +61,39 @@ func TestImplementationsAcrossPackages(t *testing.T) {
 	}
 }
 
-func TestAnalyzerReportsMissingImplementation(t *testing.T) {
-	root := t.TempDir()
-	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module example.com/fixture\n\ngo 1.23\n"), 0644); err != nil {
-		t.Fatal(err)
+func TestRun(t *testing.T) {
+	cases := []struct {
+		name, declarations string
+		want               int
+	}{
+		{"none", "", 1},
+		{"one", "type One struct{}; func (One) Work() {}", 1},
+		{"two", "type One struct{}; func (One) Work() {}; type Two struct{}; func (*Two) Work() {}", 0},
 	}
-	source := "package fixture\ntype Worker interface { Work() }\ntype Only struct{}\nfunc (Only) Work() {}\n"
-	if err := os.WriteFile(filepath.Join(root, "fixture.go"), []byte(source), 0644); err != nil {
-		t.Fatal(err)
-	}
-	fset := token.NewFileSet()
-	pkgs, err := packages.Load(&packages.Config{Dir: root, Fset: fset, Mode: packages.LoadSyntax}, ".")
-	if err != nil || len(pkgs) != 1 {
-		t.Fatalf("load: %v", err)
-	}
-	var findings []analysis.Diagnostic
-	p := pkgs[0]
-	_, err = Analyzer.Run(&analysis.Pass{Fset: fset, Files: p.Syntax, Pkg: p.Types, TypesInfo: p.TypesInfo, Report: func(d analysis.Diagnostic) { findings = append(findings, d) }})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(findings) != 1 {
-		t.Fatalf("got %d findings, want 1", len(findings))
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module example.com/fixture\n\ngo 1.23\n"), 0644); err != nil {
+				t.Fatal(err)
+			}
+			source := "package fixture\ntype Worker interface { Work() }\n" + tc.declarations + "\n"
+			if err := os.WriteFile(filepath.Join(root, "fixture.go"), []byte(source), 0644); err != nil {
+				t.Fatal(err)
+			}
+			fset := token.NewFileSet()
+			pkgs, err := packages.Load(&packages.Config{Dir: root, Fset: fset, Mode: packages.LoadSyntax}, ".")
+			if err != nil || len(pkgs) != 1 {
+				t.Fatalf("load: %v", err)
+			}
+			var findings []analysis.Diagnostic
+			p := pkgs[0]
+			_, err = Analyzer.Run(&analysis.Pass{Fset: fset, Files: p.Syntax, Pkg: p.Types, TypesInfo: p.TypesInfo, Report: func(d analysis.Diagnostic) { findings = append(findings, d) }})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(findings) != tc.want {
+				t.Fatalf("got %d findings, want %d", len(findings), tc.want)
+			}
+		})
 	}
 }
