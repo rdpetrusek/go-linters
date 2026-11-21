@@ -19,7 +19,7 @@ func run(pass *analysis.Pass) (any, error) {
 			continue
 		}
 		source := strings.TrimSuffix(filename, "_test.go") + ".go"
-		_, err := os.ReadFile(source)
+		_, err := os.ReadFile(source) // #nosec G304 -- source is the adjacent file for the test being analyzed.
 		if errors.Is(err, os.ErrNotExist) {
 			pass.Reportf(file.Name.Pos(), "test file must be beside its corresponding source file %s", source)
 			continue

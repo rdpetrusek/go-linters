@@ -2,6 +2,19 @@ version: "2"
 linters:
   enable:
     - shared
+    - testpackage
+    - gosec
+    - errorlint
+    - nilerr
+    - bodyclose
+    - rowserrcheck
+    - sqlclosecheck
+    - contextcheck
+    - unparam
+    - gocritic
+    - revive
+    - thelper
+    - nolintlint
   settings:
     custom:
       shared:

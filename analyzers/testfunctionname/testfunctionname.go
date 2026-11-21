@@ -32,7 +32,7 @@ func run(pass *analysis.Pass) (any, error) {
 			continue
 		}
 		source := strings.TrimSuffix(filename, "_test.go") + ".go"
-		content, err := os.ReadFile(source)
+		content, err := os.ReadFile(source) // #nosec G304 -- source is the adjacent file for the test being analyzed.
 		if errors.Is(err, os.ErrNotExist) {
 			continue
 		} // testfilename reports this.

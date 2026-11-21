@@ -1,4 +1,4 @@
-package testonly
+package testonly_test
 
 import (
 	"go/token"
@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/rdpetrusek/go-linters/analyzers/testonly"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/packages"
@@ -40,10 +42,10 @@ func externalTest() { library.OnlyTest() }
 	}
 	for path, content := range files {
 		file := filepath.Join(root, path)
-		if err := os.MkdirAll(filepath.Dir(file), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(file), 0750); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		if err := os.WriteFile(file, []byte(content), 0600); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -54,7 +56,7 @@ func externalTest() { library.OnlyTest() }
 	}
 	var findings []string
 	p := pkgs[0]
-	_, err = Analyzer.Run(&analysis.Pass{Fset: fset, Files: p.Syntax, Pkg: p.Types, TypesInfo: p.TypesInfo, Report: func(d analysis.Diagnostic) { findings = append(findings, d.Message) }})
+	_, err = testonly.Analyzer.Run(&analysis.Pass{Fset: fset, Files: p.Syntax, Pkg: p.Types, TypesInfo: p.TypesInfo, Report: func(d analysis.Diagnostic) { findings = append(findings, d.Message) }})
 	if err != nil {
 		t.Fatal(err)
 	}
