@@ -1,0 +1,14 @@
+version: "2"
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - shared
+  settings:
+    custom:
+      shared:
+        type: module
+        description: Shared custom Go analyzers
