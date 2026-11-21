@@ -9,4 +9,5 @@ jobs:
         with:
           go-version: '1.24'
       - run: go test ./...
+      - run: git clone --branch v2.1.6 --single-branch --depth 1 https://github.com/golangci/golangci-lint.git /tmp/golangci-source
       - run: make lint
