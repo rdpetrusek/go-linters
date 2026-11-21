@@ -11,7 +11,7 @@ import (
 )
 
 const module = "github.com/rdpetrusek/go-linters"
-const golangciVersion = "v2.1.6"
+const golangciVersion = "v2.7.2"
 
 //go:embed config.yml
 var policy []byte
