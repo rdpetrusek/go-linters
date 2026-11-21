@@ -12,3 +12,18 @@ jobs:
       - run: make install
       - run: make lint
       - run: make lint
+      - name: Verify a consuming module
+        env:
+          LINTER_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          go run "github.com/rdpetrusek/go-linters/cmd/go-linters@${LINTER_REVISION}" -dir "$RUNNER_TEMP/shared-linter"
+          mkdir "$RUNNER_TEMP/consumer"
+          cd "$RUNNER_TEMP/consumer"
+          printf 'module example.com/consumer\n\ngo 1.24\n' > go.mod
+          printf 'package consumer\n\n// TODO: add owner\nfunc Example() {}\n' > main.go
+          if "$RUNNER_TEMP/shared-linter/go-linters" run --config "$RUNNER_TEMP/shared-linter/go-linters.yml" ./... > lint.log 2>&1; then
+            cat lint.log
+            exit 1
+          fi
+          cat lint.log
+          grep -q 'TODO comment must name an owner' lint.log
