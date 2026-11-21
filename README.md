@@ -3,6 +3,12 @@
 Reusable Go `go/analysis` analyzers and a module plugin for
 [golangci-lint](https://golangci-lint.run/). The current example analyzer,
 `todoowner`, reports `// TODO:` and `// TODO():` comments without an owner.
+`testonly` reports production functions, methods, package variables, constants,
+and named struct fields referenced by tests but not production code in the
+same module. It does not report dependencies. References from other modules,
+reflection and implicit interface satisfaction are not visible to this check;
+exported APIs used outside the module may therefore be reported. Package loading
+uses the default Go build environment and excludes inactive build-tag variants.
 
 ## Use with golangci-lint
 
