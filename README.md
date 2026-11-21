@@ -63,6 +63,41 @@ comments without an owner. All analyzers registered under `shared` run when
 that plugin is enabled; they are not individually selectable through this
 plugin configuration.
 
+## Build the golangci-lint module plugin manually
+
+You can also build a custom golangci-lint binary with the standard module
+plugin mechanism. Install golangci-lint v2.7.2, then create this
+`.custom-gcl.yml` in the consuming repository:
+
+```yaml
+version: v2.7.2
+plugins:
+  - module: github.com/rdpetrusek/go-linters
+    import: github.com/rdpetrusek/go-linters/plugin
+    version: vX.Y.Z
+```
+
+Replace `vX.Y.Z` with a published version of this module, then run:
+
+```sh
+golangci-lint custom
+./custom-gcl run ./...
+```
+
+The `custom-gcl` binary uses normal golangci-lint configuration discovery.
+Enable the `shared` module plugin in `.golangci.yml` as shown above. Build
+again when the pinned plugin version changes. This path does not require the
+installer above.
+
+## Use analyzers with other Go tools
+
+The analyzers are ordinary `golang.org/x/tools/go/analysis` analyzers. For
+example, a Go analysis driver can import
+`github.com/rdpetrusek/go-linters/analyzers/todoowner` and use
+`todoowner.Analyzer`, including with `multichecker.Main(todoowner.Analyzer)`.
+Pin this module as a dependency in that tool. An integration needs to support
+Go's `go/analysis` framework.
+
 ## CI
 
 Use the same pinned version and command locally and in CI. For example, after
@@ -78,7 +113,7 @@ setup; the binary can be reused for subsequent lint runs.
 
 ## Developing shared analyzers
 
-Add Go analyzers to the plugin in `plugin/` and register them in
-`BuildAnalyzers`. Repositories receive changes when they install a version
+Add reusable Go analyzers under `analyzers/` and register them in the
+plugin's `BuildAnalyzers`. Repositories receive changes when they install a version
 that contains them. In this repository, `make test` runs tests, `make install`
 builds the local version into `.bin`, and `make lint` runs that binary.

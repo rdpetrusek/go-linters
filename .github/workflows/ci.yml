@@ -28,3 +28,12 @@ jobs:
           fi
           cat lint.log
           grep -q 'TODO comment must name an owner' lint.log
+          go get "github.com/rdpetrusek/go-linters@${LINTER_REVISION}"
+          mkdir -p cmd/check
+          printf 'package main\nimport ("github.com/rdpetrusek/go-linters/analyzers/todoowner"; "golang.org/x/tools/go/analysis/multichecker")\nfunc main() { multichecker.Main(todoowner.Analyzer) }\n' > cmd/check/main.go
+          if go run ./cmd/check . > analyzer.log 2>&1; then
+            cat analyzer.log
+            exit 1
+          fi
+          cat analyzer.log
+          grep -q 'TODO comment must name an owner' analyzer.log

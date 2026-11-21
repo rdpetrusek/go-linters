@@ -2,9 +2,8 @@
 package plugin
 
 import (
- "strings"
-
  "github.com/golangci/plugin-module-register/register"
+ "github.com/rdpetrusek/go-linters/analyzers/todoowner"
  "golang.org/x/tools/go/analysis"
 )
 
@@ -15,18 +14,5 @@ type Plugin struct{}
 func New(_ any) (register.LinterPlugin, error) { return &Plugin{}, nil }
 func (*Plugin) GetLoadMode() string { return register.LoadModeSyntax }
 func (*Plugin) BuildAnalyzers() ([]*analysis.Analyzer, error) {
- return []*analysis.Analyzer{{Name: "todoowner", Doc: "report TODO comments without an owner", Run: run}}, nil
-}
-
-func run(pass *analysis.Pass) (any, error) {
- for _, file := range pass.Files {
-  for _, group := range file.Comments {
-   for _, comment := range group.List {
-    if strings.HasPrefix(comment.Text, "// TODO:") || strings.HasPrefix(comment.Text, "// TODO():") {
-     pass.Reportf(comment.Pos(), "TODO comment must name an owner")
-    }
-   }
-  }
- }
- return nil, nil
+ return []*analysis.Analyzer{todoowner.Analyzer}, nil
 }
