@@ -45,7 +45,7 @@ func run() error {
  if err := os.WriteFile(buildConfig, []byte(build), 0600); err != nil { return err }
  config := filepath.Join(dir, "policy.yml")
  if err := os.WriteFile(config, policy, 0600); err != nil { return err }
- custom := exec.Command(filepath.Join(bin, "golangci-lint"), "custom")
+ custom := exec.Command(filepath.Join(bin, "golangci-lint"), "custom", "-v")
  custom.Dir = dir
  custom.Stdout, custom.Stderr = os.Stdout, os.Stderr
  if err := custom.Run(); err != nil { return fmt.Errorf("build custom golangci-lint: %w", err) }
