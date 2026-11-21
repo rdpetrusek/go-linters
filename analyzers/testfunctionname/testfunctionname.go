@@ -28,9 +28,7 @@ func run(pass *analysis.Pass) (any, error) {
   filename := pass.Fset.PositionFor(file.Pos(), false).Filename
   if !strings.HasSuffix(filename, "_test.go") { continue }
   source := strings.TrimSuffix(filename, "_test.go") + ".go"
-  read := pass.ReadFile
-  if read == nil { read = os.ReadFile }
-  content, err := read(source)
+  content, err := os.ReadFile(source)
   if errors.Is(err, os.ErrNotExist) { continue } // testfilename reports this.
   if err != nil { return nil, err }
   original, err := parser.ParseFile(token.NewFileSet(), source, content, 0)
