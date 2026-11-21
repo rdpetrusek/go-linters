@@ -2,7 +2,6 @@
 package plugin
 
 import (
- "go/ast"
  "strings"
 
  "github.com/golangci/plugin-module-register/register"
